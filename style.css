@@ -153,7 +153,23 @@ html, body {
 .input-glass::placeholder { color: #8b8fb3; }
 .input-glass:focus { border-color: var(--azul-texto-2); box-shadow: 0 0 0 3px rgba(42,42,168,0.15); }
 .input-glass--area { min-height: 70px; resize: vertical; font-family: var(--font-body); }
-.input-hidden { display: none; }
+.input-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+.feedback-msg {
+  min-height: 1.1rem;
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: none;
+}
+.feedback-msg.show { display: block; }
+.feedback-msg--error { color: var(--erro); }
+.feedback-msg--success { color: var(--sucesso); }
 
 /* ---------- Botões "glassy" estilo Soul ---------- */
 .btn-glass {

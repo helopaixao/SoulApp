@@ -13,13 +13,13 @@ const SENHA_VALIDA = "Empresa23";
 
 // ---------- "Bancos" de dados em memória (somem ao recarregar a página) ----------
 const dados = {
-  financas: [],     // { gasto, lucro, data }
+  financas: [],     // { tipo, descricao, valor, data }
   servicos: [],      // { nome, valor, profissional, descricao }
   agendamentos: []   // { cliente, servico, data, hora }
 };
 
 // =========================================================
-// NAVEGAÇÃO ENTRE TELAS
+// FUNÇÕES GERAIS
 // =========================================================
 function irPara(nomeTela) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -27,6 +27,30 @@ function irPara(nomeTela) {
   if (destino) destino.classList.add("active");
 }
 
+function formatarMoeda(valor) {
+  return Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatarDataParaExibir(dataISO) {
+  if (!dataISO) return "";
+  const [ano, mes, dia] = dataISO.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+function mostrarFeedback(elementoId, mensagem, tipo = "") {
+  const elemento = document.getElementById(elementoId);
+  if (!elemento) return;
+
+  elemento.textContent = mensagem || "";
+  elemento.className = "feedback-msg";
+  if (mensagem) elemento.classList.add("show");
+  if (tipo === "erro") elemento.classList.add("feedback-msg--error");
+  if (tipo === "sucesso") elemento.classList.add("feedback-msg--success");
+}
+
+// =========================================================
+// NAVEGAÇÃO ENTRE TELAS
+// =========================================================
 // Botões "menu-item" (Escolha a Função -> Financa / Servico / Agendamento / Historico)
 document.querySelectorAll(".menu-item").forEach(btn => {
   btn.addEventListener("click", () => irPara(btn.dataset.goto));
@@ -45,7 +69,7 @@ document.getElementById("btn-logout").addEventListener("click", () => {
 });
 
 // =========================================================
-// TELA: LOGIN (equivalente ao bloco entrar_botao.Click)
+// TELA: LOGIN
 // =========================================================
 document.getElementById("form-login").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -64,13 +88,9 @@ document.getElementById("form-login").addEventListener("submit", (e) => {
 // =========================================================
 // TELA: FINANÇAS
 // =========================================================
-function formatarMoeda(valor) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
 function atualizarResumoFinanca() {
-  const totalGastos = dados.financas.reduce((acc, item) => acc + item.gasto, 0);
-  const totalLucro = dados.financas.reduce((acc, item) => acc + item.lucro, 0);
+  const totalGastos = dados.financas.reduce((acc, item) => acc + (item.tipo === "gasto" ? item.valor : 0), 0);
+  const totalLucro = dados.financas.reduce((acc, item) => acc + (item.tipo === "lucro" ? item.valor : 0), 0);
   document.getElementById("resumo-gastos").textContent = formatarMoeda(totalGastos);
   document.getElementById("resumo-lucro").textContent = formatarMoeda(totalLucro);
   document.getElementById("resumo-saldo").textContent = formatarMoeda(totalLucro - totalGastos);
@@ -82,7 +102,10 @@ function renderizarListaFinanca() {
   dados.financas.forEach((item, index) => {
     const li = document.createElement("li");
     li.innerHTML = `
-      <span class="item-info">${item.data} — Gasto: ${formatarMoeda(item.gasto)} | Lucro: ${formatarMoeda(item.lucro)}</span>
+      <span class="item-info">
+        <strong>${item.descricao}</strong><br>
+        ${item.tipo === "gasto" ? "Gasto" : "Lucro"}: ${formatarMoeda(item.valor)}
+      </span>
       <button class="item-del" data-index="${index}" title="Excluir">✕</button>
     `;
     lista.appendChild(li);
@@ -99,20 +122,39 @@ function renderizarListaFinanca() {
 
 document.getElementById("form-financa").addEventListener("submit", (e) => {
   e.preventDefault();
-  const gasto = parseFloat(document.getElementById("financa-gastos").value) || 0;
-  const lucro = parseFloat(document.getElementById("financa-lucro").value) || 0;
-  const agora = new Date().toLocaleDateString("pt-BR");
+  const tipo = document.getElementById("financa-tipo").value;
+  const descricao = document.getElementById("financa-descricao").value.trim();
+  const valor = Number(document.getElementById("financa-valor").value);
 
-  dados.financas.push({ gasto, lucro, data: agora });
+  if (!descricao) {
+    mostrarFeedback("financa-feedback", "Descreva o que foi gasto ou lucrado.", "erro");
+    return;
+  }
+
+  if (!Number.isFinite(valor) || valor <= 0) {
+    mostrarFeedback("financa-feedback", "Informe um valor válido maior que zero.", "erro");
+    return;
+  }
+
+  const agora = new Date().toLocaleDateString("pt-BR");
+  dados.financas.push({ tipo, descricao, valor, data: agora });
   e.target.reset();
+  document.getElementById("financa-tipo").value = "lucro";
   renderizarListaFinanca();
   atualizarResumoFinanca();
   renderizarHistoricoFinancas();
+  mostrarFeedback("financa-feedback", "Lançamento salvo com sucesso.", "sucesso");
 });
 
 // =========================================================
 // TELA: SERVIÇOS
 // =========================================================
+function renderizarDatalistServicos() {
+  const datalist = document.getElementById("servicos-cadastrados");
+  if (!datalist) return;
+  datalist.innerHTML = dados.servicos.map(item => `<option value="${item.nome}"></option>`).join("");
+}
+
 function renderizarListaServico() {
   const lista = document.getElementById("servico-lista");
   lista.innerHTML = "";
@@ -127,6 +169,7 @@ function renderizarListaServico() {
   lista.querySelectorAll(".item-del").forEach(btn => {
     btn.addEventListener("click", () => {
       dados.servicos.splice(Number(btn.dataset.index), 1);
+      renderizarDatalistServicos();
       renderizarListaServico();
       renderizarHistoricoServicos();
     });
@@ -136,14 +179,26 @@ function renderizarListaServico() {
 document.getElementById("form-servico").addEventListener("submit", (e) => {
   e.preventDefault();
   const nome = document.getElementById("servico-nome").value.trim();
-  const valor = parseFloat(document.getElementById("servico-valor").value) || 0;
+  const valor = Number(document.getElementById("servico-valor").value);
   const profissional = document.getElementById("servico-profissional").value.trim();
   const descricao = document.getElementById("servico-descricao").value.trim();
 
+  if (!nome) {
+    mostrarFeedback("servico-feedback", "Informe o nome do serviço.", "erro");
+    return;
+  }
+
+  if (!Number.isFinite(valor) || valor <= 0) {
+    mostrarFeedback("servico-feedback", "O valor do serviço precisa ser numérico e maior que zero.", "erro");
+    return;
+  }
+
   dados.servicos.push({ nome, valor, profissional, descricao });
   e.target.reset();
+  renderizarDatalistServicos();
   renderizarListaServico();
   renderizarHistoricoServicos();
+  mostrarFeedback("servico-feedback", "Serviço cadastrado com sucesso.", "sucesso");
 });
 
 // =========================================================
@@ -152,6 +207,14 @@ document.getElementById("form-servico").addEventListener("submit", (e) => {
 const inputData = document.getElementById("ag-data-input");
 const inputHora = document.getElementById("ag-hora-input");
 
+function resetarAgendamentoForm() {
+  document.getElementById("form-agendamento").reset();
+  document.getElementById("data-label").textContent = "Escolher Data";
+  document.getElementById("hora-label").textContent = "Escolher Hora";
+  inputData.value = "";
+  inputHora.value = "";
+}
+
 document.getElementById("btn-escolher-data").addEventListener("click", () => {
   inputData.showPicker ? inputData.showPicker() : inputData.click();
 });
@@ -159,11 +222,10 @@ document.getElementById("btn-escolher-hora").addEventListener("click", () => {
   inputHora.showPicker ? inputHora.showPicker() : inputHora.click();
 });
 inputData.addEventListener("change", () => {
-  const [ano, mes, dia] = inputData.value.split("-");
-  document.getElementById("data-label").textContent = `${dia}/${mes}/${ano}`;
+  document.getElementById("data-label").textContent = inputData.value ? formatarDataParaExibir(inputData.value) : "Escolher Data";
 });
 inputHora.addEventListener("change", () => {
-  document.getElementById("hora-label").textContent = inputHora.value;
+  document.getElementById("hora-label").textContent = inputHora.value || "Escolher Hora";
 });
 
 function renderizarListaAgendamento() {
@@ -190,15 +252,42 @@ document.getElementById("form-agendamento").addEventListener("submit", (e) => {
   e.preventDefault();
   const cliente = document.getElementById("ag-nome").value.trim();
   const servico = document.getElementById("ag-servico").value.trim();
-  const data = document.getElementById("data-label").textContent === "Escolher Data" ? "" : document.getElementById("data-label").textContent;
-  const hora = document.getElementById("hora-label").textContent === "Escolher Hora" ? "" : document.getElementById("hora-label").textContent;
+  const dataISO = inputData.value;
+  const hora = inputHora.value;
+  const data = dataISO ? formatarDataParaExibir(dataISO) : "";
+
+  if (!cliente) {
+    mostrarFeedback("agendamento-feedback", "Informe o nome do cliente.", "erro");
+    return;
+  }
+
+  if (dados.servicos.length === 0) {
+    mostrarFeedback("agendamento-feedback", "Cadastre pelo menos um serviço antes de agendar.", "erro");
+    return;
+  }
+
+  const servicoCadastrado = dados.servicos.some(item => item.nome.toLowerCase() === servico.toLowerCase());
+  if (!servicoCadastrado) {
+    mostrarFeedback("agendamento-feedback", "Este serviço não está cadastrado. Cadastre primeiro.", "erro");
+    return;
+  }
+
+  if (!dataISO || !hora) {
+    mostrarFeedback("agendamento-feedback", "Selecione uma data e uma hora para o agendamento.", "erro");
+    return;
+  }
+
+  const horarioOcupado = dados.agendamentos.some(item => item.data === data && item.hora === hora);
+  if (horarioOcupado) {
+    mostrarFeedback("agendamento-feedback", "Este horário já está ocupado para essa data.", "erro");
+    return;
+  }
 
   dados.agendamentos.push({ cliente, servico, data, hora });
-  e.target.reset();
-  document.getElementById("data-label").textContent = "Escolher Data";
-  document.getElementById("hora-label").textContent = "Escolher Hora";
+  resetarAgendamentoForm();
   renderizarListaAgendamento();
   renderizarHistoricoAgendamentos();
+  mostrarFeedback("agendamento-feedback", "Agendamento salvo com sucesso.", "sucesso");
 });
 
 // =========================================================
@@ -242,9 +331,16 @@ function renderizarHistoricoFinancas() {
     return;
   }
   painel.innerHTML = `<ul class="lista-itens">${dados.financas.map(item => `
-    <li><span class="item-info">${item.data} — Gasto: ${formatarMoeda(item.gasto)} | Lucro: ${formatarMoeda(item.lucro)}</span></li>
+    <li><span class="item-info">${item.data} — ${item.tipo === "gasto" ? "Gasto" : "Lucro"}: ${item.descricao} (${formatarMoeda(item.valor)})</span></li>
   `).join("")}</ul>`;
 }
 
-// Inicializa os resumos vazios
+// Inicializa os resumos e listas
+renderizarDatalistServicos();
 atualizarResumoFinanca();
+renderizarListaFinanca();
+renderizarListaServico();
+renderizarListaAgendamento();
+renderizarHistoricoAgendamentos();
+renderizarHistoricoServicos();
+renderizarHistoricoFinancas();
