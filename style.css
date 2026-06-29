@@ -34,6 +34,9 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: pan-x pan-y; /* Permite rolar a página, mas bloqueia o zoom de pinça */
+    max-width: 100%;
+    overflow-x: hidden; /* Evita que a página dance para os lados */
 }
 
 /* ---------- Moldura tipo celular para o protótipo ---------- */
