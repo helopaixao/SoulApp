@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soul — Gestão de Salão</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-screen" id="app">
+
+    <!-- ===================== TELA: LOGIN ===================== -->
+    <section class="screen active" id="screen-login" data-screen="login">
+      <div class="drops-bg"></div>
+      <div class="screen-content">
+        <img src="assets/soul-logo.jpg" alt="Soul" class="logo logo--big">
+
+        <form class="form-stack" id="form-login" autocomplete="off">
+          <input type="email" id="login-email" placeholder="Email" class="input-glass" required>
+          <input type="password" id="login-senha" placeholder="Senha" class="input-glass" required>
+          <p class="error-msg" id="login-erro">Senha ou Email errado!</p>
+          <button type="submit" class="btn-glass btn-glass--primary">Entrar</button>
+        </form>
+
+        <p class="login-hint">Dica de acesso (protótipo):<br><strong>cadastroempresa@gmail.com</strong> / <strong>Empresa23</strong></p>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+    <!-- ===================== TELA: ESCOLHER FUNÇÃO ===================== -->
+    <section class="screen" id="screen-funcao" data-screen="funcao">
+      <div class="drops-bg"></div>
+      <div class="screen-content">
+        <img src="assets/soul-logo.jpg" alt="Soul" class="logo logo--medium">
+        <h1 class="title-main">Escolha a Função</h1>
+
+        <nav class="menu-list">
+          <button class="menu-item" data-goto="financa">Gerenciar Finanças</button>
+          <button class="menu-item" data-goto="servico">Gerenciar Serviços</button>
+          <button class="menu-item" data-goto="agendamento">Agendamento</button>
+          <button class="menu-item" data-goto="historico">Histórico</button>
+        </nav>
+
+        <button class="btn-logout" id="btn-logout" title="Sair">Sair</button>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+    <!-- ===================== TELA: FINANÇAS ===================== -->
+    <section class="screen" id="screen-financa" data-screen="financa">
+      <div class="drops-bg"></div>
+      <button class="btn-voltar" data-back="funcao">Voltar</button>
+      <div class="screen-content">
+        <img src="assets/soul-logo.jpg" alt="Soul" class="logo logo--medium">
+        <h1 class="title-main">Faturamento</h1>
+
+        <form class="form-stack" id="form-financa">
+          <input type="number" step="0.01" placeholder="Inserir Gastos (R$)" class="input-glass" id="financa-gastos" required>
+          <input type="number" step="0.01" placeholder="Inserir Lucro (R$)" class="input-glass" id="financa-lucro" required>
+          <button type="submit" class="btn-glass btn-glass--primary">Salvar Lançamento</button>
+        </form>
+
+        <div class="financa-resumo" id="financa-resumo">
+          <div class="resumo-card resumo-card--gasto">
+            <span class="resumo-label">Total de Gastos</span>
+            <span class="resumo-valor" id="resumo-gastos">R$ 0,00</span>
+          </div>
+          <div class="resumo-card resumo-card--lucro">
+            <span class="resumo-label">Total de Lucro</span>
+            <span class="resumo-valor" id="resumo-lucro">R$ 0,00</span>
+          </div>
+          <div class="resumo-card resumo-card--saldo">
+            <span class="resumo-label">Saldo</span>
+            <span class="resumo-valor" id="resumo-saldo">R$ 0,00</span>
+          </div>
+        </div>
+
+        <ul class="lista-itens" id="financa-lista"></ul>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+    <!-- ===================== TELA: SERVIÇOS ===================== -->
+    <section class="screen" id="screen-servico" data-screen="servico">
+      <div class="drops-bg"></div>
+      <button class="btn-voltar" data-back="funcao">Voltar</button>
+      <div class="screen-content">
+        <img src="assets/soul-logo.jpg" alt="Soul" class="logo logo--medium">
+        <h1 class="title-main">Tela de Serviços</h1>
+
+        <form class="form-stack" id="form-servico">
+          <input type="text" placeholder="Nome do serviço" class="input-glass" id="servico-nome" required>
+          <input type="number" step="0.01" placeholder="Valor (R$)" class="input-glass" id="servico-valor" required>
+          <input type="text" placeholder="Profissional responsável" class="input-glass" id="servico-profissional">
+          <textarea placeholder="Descrição" class="input-glass input-glass--area" id="servico-descricao"></textarea>
+          <button type="submit" class="btn-glass btn-glass--primary">Cadastrar Serviço</button>
+        </form>
+
+        <ul class="lista-itens" id="servico-lista"></ul>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+    <!-- ===================== TELA: AGENDAMENTO ===================== -->
+    <section class="screen" id="screen-agendamento" data-screen="agendamento">
+      <div class="drops-bg"></div>
+      <button class="btn-voltar" data-back="funcao">Voltar</button>
+      <div class="screen-content">
+        <img src="assets/soul-logo.jpg" alt="Soul" class="logo logo--medium">
+
+        <form class="form-stack" id="form-agendamento">
+          <input type="text" placeholder="Nome do Cliente" class="input-glass" id="ag-nome" required>
+          <input type="text" placeholder="Serviço" class="input-glass" id="ag-servico" required>
+          <button type="button" class="btn-glass btn-glass--data" id="btn-escolher-data">
+            <span id="data-label">Escolher Data</span>
+          </button>
+          <input type="date" id="ag-data-input" class="input-hidden">
+          <button type="button" class="btn-glass btn-glass--hora" id="btn-escolher-hora">
+            <span id="hora-label">Escolher Hora</span>
+          </button>
+          <input type="time" id="ag-hora-input" class="input-hidden">
+          <button type="submit" class="btn-glass btn-glass--enviar">Enviar</button>
+        </form>
+
+        <ul class="lista-itens" id="agendamento-lista"></ul>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+    <!-- ===================== TELA: HISTÓRICO ===================== -->
+    <section class="screen" id="screen-historico" data-screen="historico">
+      <div class="drops-bg"></div>
+      <button class="btn-voltar" data-back="funcao">Voltar</button>
+      <div class="screen-content">
+        <h1 class="title-sub">Tela de Historico</h1>
+
+        <div class="historico-tabs">
+          <button class="tab-btn active" data-tab="agendamentos">Agendamentos</button>
+          <button class="tab-btn" data-tab="servicos">Serviços</button>
+          <button class="tab-btn" data-tab="financas">Finanças</button>
+        </div>
+
+        <div class="historico-painel" id="hist-agendamentos">
+          <p class="empty-msg">Nenhum agendamento registrado ainda.</p>
+        </div>
+        <div class="historico-painel" id="hist-servicos" style="display:none;">
+          <p class="empty-msg">Nenhum serviço cadastrado ainda.</p>
+        </div>
+        <div class="historico-painel" id="hist-financas" style="display:none;">
+          <p class="empty-msg">Nenhum lançamento financeiro ainda.</p>
+        </div>
+      </div>
+      <p class="brand-footer">@Soul</p>
+    </section>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

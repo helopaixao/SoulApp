@@ -1,0 +1,374 @@
+/* =========================================================
+   SOUL — Identidade visual
+   Paleta extraída do app original (MIT App Inventor):
+   - Fundo principal:  #A7F2FF (azul "água" claro)
+   - Texto principal:  #1B1F8A (azul marinho/índigo)
+   - Botões glass:      gradiente azul claro -> branco com borda escura fina
+   - Footer/marca:      "@Soul" translúcido
+========================================================= */
+
+:root {
+  --azul-fundo: #A7F2FF;
+  --azul-fundo-2: #8FEFFB;
+  --azul-texto: #1B1B8F;
+  --azul-texto-2: #2A2AA8;
+  --branco: #ffffff;
+  --vidro-borda: #2b2b55;
+  --erro: #c0334d;
+  --sucesso: #1f8a5a;
+  --sombra-suave: rgba(20, 40, 90, 0.18);
+  --font-display: 'Baloo 2', 'Quicksand', sans-serif;
+  --font-body: 'Quicksand', 'Segoe UI', sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background: #0d1b2e;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Moldura tipo celular para o protótipo ---------- */
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: #111;
+  border-radius: 46px;
+  padding: 12px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.55), 0 0 0 2px #222 inset;
+  position: relative;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--azul-fundo);
+  border-radius: 34px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- Telas (screens) ---------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--azul-fundo) 0%, var(--azul-fundo-2) 100%);
+  overflow-y: auto;
+}
+.screen.active { display: flex; }
+
+.screen-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 26px 20px;
+  text-align: center;
+}
+
+/* ---------- Fundo de gotas (CSS puro, leve, fiel ao original) ---------- */
+.drops-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 20%, rgba(255,255,255,0.55) 0 6px, transparent 7px),
+    radial-gradient(circle at 30% 38%, rgba(255,255,255,0.4) 0 9px, transparent 10px),
+    radial-gradient(circle at 70% 15%, rgba(255,255,255,0.5) 0 7px, transparent 8px),
+    radial-gradient(circle at 85% 32%, rgba(255,255,255,0.35) 0 11px, transparent 12px),
+    radial-gradient(circle at 18% 55%, rgba(255,255,255,0.4) 0 8px, transparent 9px),
+    radial-gradient(circle at 55% 48%, rgba(255,255,255,0.3) 0 14px, transparent 15px),
+    radial-gradient(circle at 90% 60%, rgba(255,255,255,0.45) 0 6px, transparent 7px),
+    radial-gradient(circle at 8% 75%, rgba(255,255,255,0.4) 0 10px, transparent 11px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.35) 0 8px, transparent 9px),
+    radial-gradient(circle at 65% 88%, rgba(255,255,255,0.45) 0 9px, transparent 10px),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,0.3) 0 12px, transparent 13px),
+    radial-gradient(circle at 25% 95%, rgba(255,255,255,0.4) 0 7px, transparent 8px);
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,0.3));
+}
+
+/* ---------- Logo ---------- */
+.logo {
+  display: block;
+  margin: 0 auto;
+  border-radius: 18px;
+  object-fit: cover;
+}
+.logo--big   { width: 220px; height: 220px; margin-top: 36px; margin-bottom: 18px; }
+.logo--medium{ width: 140px; height: 140px; margin-top: 8px; margin-bottom: 8px; }
+
+/* ---------- Títulos ---------- */
+.title-main {
+  color: var(--azul-texto);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin: 6px 0 22px;
+}
+.title-sub {
+  color: var(--branco);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  text-align: left;
+  width: 100%;
+  margin: 4px 0 18px;
+}
+
+/* ---------- Formulários / inputs estilo "vidro" ---------- */
+.form-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.input-glass {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(43,43,85,0.25);
+  background: var(--branco);
+  color: var(--azul-texto);
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 500;
+  box-shadow: 0 2px 6px var(--sombra-suave);
+  outline: none;
+}
+.input-glass::placeholder { color: #8b8fb3; }
+.input-glass:focus { border-color: var(--azul-texto-2); box-shadow: 0 0 0 3px rgba(42,42,168,0.15); }
+.input-glass--area { min-height: 70px; resize: vertical; font-family: var(--font-body); }
+.input-hidden { display: none; }
+
+/* ---------- Botões "glassy" estilo Soul ---------- */
+.btn-glass {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1.5px solid var(--vidro-borda);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: transform .08s ease, filter .15s ease;
+}
+.btn-glass:active { transform: translateY(1px) scale(0.99); }
+
+.btn-glass--primary {
+  background: linear-gradient(180deg, #e9fbff 0%, #bdeefc 55%, #9fe6f7 100%);
+  color: var(--azul-texto);
+}
+.btn-glass--primary:hover { filter: brightness(1.04); }
+
+.btn-glass--data {
+  background: linear-gradient(180deg, #6a6ee0 0%, #5457cf 100%);
+  color: #fff;
+  border-color: #34357c;
+}
+.btn-glass--hora {
+  background: linear-gradient(180deg, #d8fbff 0%, #b9f3fb 100%);
+  color: var(--azul-texto);
+}
+.btn-glass--enviar {
+  width: auto;
+  align-self: center;
+  min-width: 140px;
+  background: linear-gradient(180deg, #cdeef6 0%, #a9e1ec 100%);
+  color: var(--azul-texto);
+  margin-top: 4px;
+}
+
+/* ---------- Tela de Login específicos ---------- */
+.error-msg {
+  display: none;
+  color: var(--erro);
+  background: #ffe7ec;
+  border: 1px solid #f3aebd;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: -2px 0 2px;
+}
+.error-msg.show { display: block; }
+
+.login-hint {
+  margin-top: 18px;
+  font-size: 0.78rem;
+  color: var(--azul-texto-2);
+  background: rgba(255,255,255,0.55);
+  border-radius: 10px;
+  padding: 8px 12px;
+  line-height: 1.4;
+}
+
+/* ---------- Menu "Escolha a Função" ---------- */
+.menu-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.menu-item {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.15));
+  border: none;
+  border-bottom: 2px solid rgba(27,27,143,0.35);
+  color: var(--azul-texto);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 18px 10px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.menu-item:hover { background: rgba(255,255,255,0.4); }
+.menu-item:active { background: rgba(255,255,255,0.6); }
+
+.btn-logout {
+  margin-top: 30px;
+  padding: 10px 22px;
+  border-radius: 20px;
+  border: 1.5px solid var(--vidro-borda);
+  background: rgba(255,255,255,0.5);
+  color: var(--azul-texto);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* ---------- Botão Voltar ---------- */
+.btn-voltar {
+  position: relative;
+  z-index: 3;
+  align-self: flex-start;
+  margin: 16px 0 0 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--vidro-borda);
+  background: linear-gradient(180deg, #e9fbff 0%, #bdeefc 100%);
+  color: var(--azul-texto);
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* ---------- Finanças: resumo e listas ---------- */
+.financa-resumo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.resumo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.55);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+}
+.resumo-label { color: var(--azul-texto); font-size: 0.85rem; }
+.resumo-valor { font-family: var(--font-display); font-size: 1.05rem; }
+.resumo-card--gasto .resumo-valor { color: var(--erro); }
+.resumo-card--lucro .resumo-valor { color: var(--sucesso); }
+.resumo-card--saldo .resumo-valor { color: var(--azul-texto-2); }
+
+.lista-itens {
+  width: 100%;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lista-itens li {
+  background: rgba(255,255,255,0.55);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--azul-texto);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.lista-itens li .item-info { flex: 1; }
+.lista-itens li .item-del {
+  background: none;
+  border: none;
+  color: var(--erro);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* ---------- Histórico ---------- */
+.historico-tabs {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 9px 4px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.25);
+  color: var(--branco);
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: rgba(255,255,255,0.85);
+  color: var(--azul-texto);
+}
+.historico-painel { width: 100%; }
+.empty-msg {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.88rem;
+  margin-top: 30px;
+}
+
+/* ---------- Rodapé de marca ---------- */
+.brand-footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin: 0;
+  padding: 10px 0 16px;
+}
+
+/* ---------- Responsivo (caso renderize fora da moldura) ---------- */
+@media (max-width: 420px) {
+  .phone-frame { width: 100vw; height: 100vh; border-radius: 0; padding: 0; }
+  .phone-screen { border-radius: 0; }
+}
